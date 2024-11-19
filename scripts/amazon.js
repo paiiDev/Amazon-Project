@@ -1,5 +1,5 @@
-import {cart} from '../data/cart.js';
-import { products } from '../data/products.js';
+import { cart, addToCart } from "../data/cart.js";
+import { products } from "../data/products.js";
 
 let productsHTML = "";
 
@@ -58,38 +58,20 @@ products.forEach((product) => {
 
 document.querySelector(".js-products-grid").innerHTML = productsHTML;
 
+function updateCartQuantity() {
+  let cartQuantity = 0;
+  cart.forEach((cartItem) => {
+    cartQuantity += cartItem.quantity;
+  });
+
+  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+}
+
 document.querySelectorAll(".js-add-to-cart").forEach((button) => {
   button.addEventListener("click", () => {
-
-    const {productId}= button.dataset;
-
-    let matchingItem;
-
-    cart.forEach((item) => {
-      if(productId === item.productId){
-        matchingItem = item;
-      }
-    })
-
-  const quantitySelector = document.querySelector(`.js-quantity-selector-${productId}`);
-    const quantity = Number(quantitySelector.value);
-    console.log(quantity);
-
-    if(matchingItem){
-      matchingItem.quatity += quantity;
-    } else {
-         cart.push({
-           productId,
-          quantity
-         });
-    }
-
-    let cartQuantity = 0 ;
-    cart.forEach((item)=>{
-      cartQuantity += item.quantity;
-    });
-
-    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+    const { productId } = button.dataset;
+    addToCart(productId);
+    updateCartQuantity();
 
     let addedCart = document.querySelector(`.js-added-to-cart-${productId}`);
     addedCart.classList.add("added-to-cart-visible");
@@ -97,15 +79,14 @@ document.querySelectorAll(".js-add-to-cart").forEach((button) => {
     const addedMessageTimeouts = {};
 
     const previousTimeoutId = addedMessageTimeouts[productId];
-    if(previousTimeoutId){
+    if (previousTimeoutId) {
       clearTimeout(previousTimeoutId);
     }
 
     const timeoutId = setTimeout(() => {
-      addedCart.classList.remove('added-to-cart-visible');
-    }, 2000)
+      addedCart.classList.remove("added-to-cart-visible");
+    }, 2000);
 
     addedMessageTimeouts[productId] = timeoutId;
- 
   });
 });
